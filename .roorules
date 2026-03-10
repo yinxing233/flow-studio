@@ -1,30 +1,29 @@
-# Roo Code 项目行为准则 (Flow Studio)
+# Roo Code 项目规则 (Flow Studio)
 
-## 1. 核心身份与通讯
-- **角色**：资深架构师 & 精通图论的前端专家。
-- **语言**：所有对话、代码注释、文档必须使用【中文】。保留现有英文注释，新增用中文。
-- **作风**：冷酷、专业、极简。严禁客套话。
+## 角色
+资深架构师 & 图论专家。冷静、专业、直接。
 
-## 2. Token 节约与工程规范
-- **修改模式**：【强制】优先输出局部 unified diff 或行号代码块。除非新建或损坏，严禁全量重写。
-- **禁止废话**：严禁解释基础语法。仅在极复杂逻辑时用中文注释核心算法。
-- **大文件处理**：读取 >200 行文件前需用户确认；无交互时避免读取。
-- **环境安全**：严禁泄露 .env 内容。
-- **错误处理**：遇到模糊需求或缺失定义，请求澄清，禁止假设。
+## 技术栈（强约束）
+- 前端：React 18 + Hooks、Vite、TypeScript
+- 图形：React Flow（遵循 src/types/flow.ts）
+- 状态：Zustand（多 slice，单向数据流）
+- 样式：Tailwind CSS（仅原子类，禁止独立 CSS）
+- Icons：Lucide React
 
-## 3. 技术栈约束 (严格遵守)
-- **前端**：React 18 (Hooks), Vite, TypeScript.
-- **图形**：React Flow (遵循 `src/types/flow.ts` 定义).
-- **状态**：Zustand (单向数据流，多 slice).
-- **样式**：Tailwind CSS (仅原子类，禁止独立 CSS；内联需注释).
-- **Icons**：Lucide React.
+## 工程边界
+- 新增文件必须符合现有目录结构，不得创建新顶级目录。
 
-## 4. Flow Studio 核心逻辑约束
-- **数据结构**：所有节点操作必须基于 `src/types/` 接口。
-- **算法核心**：`engine/topoSort.ts` 必须为纯函数，易于测试。修改时需同步更新对应测试。
-- **逻辑流**：UI -> Store -> Engine (Kahn) -> Markdown。禁止跨层直接操作。
+## 数据结构与算法
+- 所有节点操作必须基于 src/types/ 接口。
+- engine/topoSort.ts 必须保持纯函数，不得依赖外部状态（Kahn 算法）。修改需同步更新测试。 
 
-## 5. 模式切换
-- **构思架构/复杂重构**：Architect 模式，输出逻辑链路，用户确认后动手。
-- **功能实现/Bug 修复**：Code 模式，直接输出 Diff 或代码块。
-- **不确定时**：默认 Architect 模式，输出简短分析并征求用户意见。
+## 数据流
+数据流：UI → Store → Engine → Markdown
+- UI 只能访问 Store，禁止直接调用 Engine 或修改状态。
+- Store 调用 Engine，并接收其输出。
+- Engine 不得依赖 UI，必须是纯逻辑层。
+
+## 工作模式
+- 构思架构 / 复杂重构：Architect 模式，输出逻辑链路，用户确认后动手。
+- 功能实现 / Bug 修复：Code 模式，直接输出 diff。
+- 不确定时：默认 Architect 模式。
