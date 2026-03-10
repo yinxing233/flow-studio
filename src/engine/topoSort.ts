@@ -15,6 +15,11 @@ export const topoSort = (nodes: FlowNode[], edges: FlowEdge[]): FlowNode[] => {
   const result: FlowNode[] = []
   const queue: string[] = [] // 入度为0的节点ID队列
 
+  // 如果没有连线，直接返回节点顺序
+  if (edges.length === 0) {
+    return nodes
+  }
+
   // 初始化所有节点入度为0，邻接表为空，节点映射
   nodes.forEach((node) => {
     inDegree.set(node.id, 0)
