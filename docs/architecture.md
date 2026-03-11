@@ -11,7 +11,7 @@ src/
 │ └── ConstraintNode.tsx
 ├── store/ # 状态管理 (Zustand)
 │ └── useStore.ts # 存放 nodes 和 edges，处理增删改逻辑
-├── engine/ # 逻辑核心 (简历亮点)
+├── engine/ # 逻辑核心 (项目亮点)
 │ ├── topoSort.ts # 拓扑排序算法逻辑
 │ └── compiler.ts # 将排序后的节点转为 MD/JSON 的模版函数
 ├── types/ # 全局类型定义
