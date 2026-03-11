@@ -1,3 +1,16 @@
+/**
+ * @file topoSort.test.ts
+ * @summary 拓扑排序算法的单元测试集。
+ * @description
+ * 本测试套件使用 Vitest 框架，针对 `topoSort` 函数进行黑盒测试。
+ * 覆盖了简单线性图、分支汇聚图、带环图以及离散图四种拓扑结构。
+ * * 测试点：
+ * - 简单 DAG：基础排序正确性。
+ * - 多根节点：处理入度平等的并发节点。
+ * - 环路检测：验证算法是否能正确识别并抛出循环引用错误。
+ * - 孤立节点：验证算法在无约束条件下的遍历能力。
+ */
+
 import { describe, it, expect } from 'vitest'
 import { topoSort } from './topoSort'
 import type { FlowNode, FlowEdge } from '../types'
