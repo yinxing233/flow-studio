@@ -35,4 +35,5 @@ python_packages/
 *.sqlite
 
 # 不上传的文件
-docs/开发过程记录.md
+v1.0版预期说明.md
+v1.0版真实实现.md
