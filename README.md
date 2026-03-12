@@ -1,34 +1,95 @@
 # Flow Studio
 
-**Flow Studio** 是一款用于可视化构建 AI Prompt 的工具。它将复杂 Prompt 从难以维护的长文本，转化为清晰的逻辑图。
+**Flow Studio** 是一个可视化流程构建工具（visual workflow builder），
+用于把复杂的多步骤指令从长篇文字转化为清晰的逻辑图，并自动生成结构化文档。
 
-> 像搭积木一样构建 Prompt，让复杂提示词结构变得清晰可维护。
-
----
-
-## Features（功能特性）
-
-- **可视化画布**：拖拽节点与连线，构建 Prompt 逻辑图。
-- **节点系统**：提供 Input（输入变量）、Action（执行步骤）、Constraint（输出约束） 三类节点，用于定义 Prompt 要素。
-- **Prompt 生成**：根据节点依赖关系，将图结构转换为结构化 Markdown Prompt。
-- **导出功能**：JSON 保存图结构，Markdown 导出最终 Prompt。
+> 像搭积木一样搭流程，让复杂逻辑一目了然。
+> 当你需要编写复杂的 AI 提示词、业务流程或技术文档时，纯文本往往难以维护——Flow Studio 让流程设计回归逻辑，而不是写长文本。
 
 ---
 
-## How It Works（工作原理）
+## 它能做什么 | What it does
 
-Flow Studio 的核心是一个 **Prompt Graph Compiler**，它将 Prompt 设计从文本编辑升级为逻辑建模：
+🧱 **可视化编辑**
+拖拽节点、建立连线，在画布上设计流程逻辑。
 
-1. **逻辑解构**：将提示词拆解为离散的基础节点（Input/Action/Constraint）。
-2. **可视化建模**：通过连线建立节点间的依赖关系，形成有向无环图（DAG）。
-3. **线性化编译**：编译器对图进行拓扑排序，生成顺序执行的线性 Prompt 文本。
+🔗 **依赖自动管理**
+节点关系自动构成 **DAG（Directed Acyclic Graph）**，系统会检测并阻止循环依赖。
 
-这种方式让复杂指令的依赖关系一目了然，大幅提升 Prompt 的可维护性与复用性。
+⚡ **实时生成文档**
+每次修改流程图都会自动重新编译，右侧实时生成结构化 **Markdown 工作流文档**。
+
+💾 **保存与分享**
+流程图自动保存到浏览器 `localStorage`，支持 **JSON 导入 / 导出**。
 
 ---
 
-## Technical Highlights（技术亮点）
+## 举个例子 | Example
 
-- **前端**：[React Flow](https://reactflow.dev/) 处理画布交互，[Zustand](https://zustand-demo.pmnd.rs/) 管理状态，[TypeScript](https://www.typescriptlang.org/) 保障类型安全。
-- **编译逻辑**：采用拓扑排序（Kahn 算法）对 DAG 进行拓扑排序，确保生成的 Prompt 严格遵循依赖顺序，无循环依赖。
-- **数据模型**：统一 NodeData 接口定义节点类型与内容，边结构存储源目标 ID，支持完整的图序列化与反序列化。
+你在画布上拖出三个节点：
+
+* **Input**：用户上传简历
+* **Action**：提取技能关键词
+* **Constraint**：输出不超过 5 项技能
+
+然后连线：
+
+- Action → 依赖 Input
+- Constraint → 依赖 Action
+
+系统会自动编译为：
+
+```
+Step 1 — Input
+用户上传简历
+
+Step 2 — Action
+提取技能关键词
+依赖：Step 1
+
+Step 3 — Constraint
+输出不超过 5 项技能
+依赖：Step 2
+```
+
+**画图 → 自动生成结构化文档。**
+
+---
+
+## 工作方式 | How it works
+
+Flow Studio 将流程设计建模为一个 **DAG 工作流**：
+
+1. 节点表示步骤（Input / Action / Constraint）
+2. 连线表示依赖关系
+3. 系统进行 **拓扑排序（Topological Sort）**
+4. 编译生成线性化的 Markdown 工作流
+
+---
+
+## 技术速览 | Tech Stack
+
+技术选型目标：**轻量、高效、类型安全**
+
+* [React Flow](https://reactflow.dev/)  — 节点式可视化画布
+* [Zustand](https://zustand-demo.pmnd.rs/) — 状态管理
+* [TypeScript](https://www.typescriptlang.org/) — 类型安全
+* **Topological Sort** — 工作流编译核心算法
+* **localStorage** — 本地持久化
+
+---
+
+## 项目状态 | Status
+
+当前阶段：**MVP**（个人独立开发作品，持续迭代中）
+
+已实现：
+
+* 可视化流程编辑
+* DAG 依赖建模
+* 循环依赖检测
+* 实时工作流编译
+* JSON 导入 / 导出
+* 本地自动保存
+
+---
