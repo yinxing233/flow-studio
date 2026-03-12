@@ -1,13 +1,33 @@
-import { Handle, Position, type NodeProps } from 'reactflow'
+import React from 'react'
+import { type NodeProps } from 'reactflow'
 import { type FlowNodeData } from '../types'
+import { BaseNode } from './BaseNode'
+import { useStore } from '../store/useStore'
 
-export const ConstraintNode = ({ data }: NodeProps<FlowNodeData>) => {
+export const ConstraintNode = ({ id, selected, data }: NodeProps<FlowNodeData>) => {
+  const updateNodeData = useStore((state) => state.updateNodeData)
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateNodeData(id, { content: e.target.value })
+  }
+
   return (
-    <div className="w-48 rounded-lg border border-yellow-500 bg-yellow-50 shadow-md">
-      <div className="p-2 font-semibold text-yellow-700">约束节点</div>
-      <div className="p-2 text-sm text-gray-600">{data.label}</div>
-      <Handle type="target" position={Position.Left} className="h-2 w-2 bg-yellow-500" />
-      <Handle type="source" position={Position.Right} className="h-2 w-2 bg-yellow-500" />
-    </div>
+    <BaseNode
+      id={id}
+      selected={selected}
+      showSource={false}
+      handleColor="bg-yellow-500"
+      className="w-64 bg-yellow-50"
+    >
+      <div className="p-2 font-semibold text-yellow-700">⚠️ 约束节点</div>
+      <textarea
+        value={data.content ?? ''}
+        onChange={handleContentChange}
+        className="nodrag w-full resize-none bg-transparent p-2 text-sm text-gray-600 focus:outline-none"
+        rows={3}
+        placeholder="请输入内容..."
+        onMouseDown={(e) => e.stopPropagation()}
+      />
+    </BaseNode>
   )
 }

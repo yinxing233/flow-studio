@@ -8,6 +8,8 @@ import { InputNode } from './nodes/InputNode'
 import { ActionNode } from './nodes/ActionNode'
 import { ConstraintNode } from './nodes/ConstraintNode'
 import { ControlPanel } from './components/ControlPanel'
+import PreviewPanel from './components/PreviewPanel'
+import Toast from './components/Toast'
 
 const nodeTypes: NodeTypes = {
   input: InputNode,
@@ -16,14 +18,16 @@ const nodeTypes: NodeTypes = {
 }
 
 const FlowEditor = () => {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, topoOrder, error } = useStore()
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore()
   const [showLeftPanel, setShowLeftPanel] = useState(true)
 
   return (
     <div className="flex h-screen w-screen">
       {/* 左侧控制面板 - 滑动动画 */}
       <div
-        className={`h-full border-r border-gray-700 transition-all duration-300 ease-in-out ${showLeftPanel ? 'w-80 opacity-100' : 'w-0 overflow-hidden opacity-0'} `}
+        className={`h-full border-r border-gray-700 transition-all duration-300 ease-in-out ${
+          showLeftPanel ? 'w-80 opacity-100' : 'w-0 overflow-hidden opacity-0'
+        }`}
       >
         {/* 面板内容容器，避免宽度为0时内容溢出 */}
         <div className="h-full w-80">
@@ -50,34 +54,15 @@ const FlowEditor = () => {
           onConnect={onConnect}
           nodeTypes={nodeTypes}
           fitView
+          style={{ background: '#f9fafb' }} // 浅灰色背景
         >
-          <Background color="#aaa" gap={16} />
+          <Background color="#d1d5db" gap={16} size={1} /> {/* 浅灰色点 */}
           <Controls />
         </ReactFlow>
       </div>
 
-      {/* 右侧面板保持不变，但统一使用 Tailwind 类 */}
-      <div className="w-80 overflow-auto border-l border-gray-700 bg-gray-800 p-5 text-white">
-        <h3 className="mb-4 text-lg font-bold">执行顺序 (Topo Order)</h3>
-        {error ? (
-          <div className="mb-4 rounded border border-red-500 bg-red-900/30 p-3 text-red-400">
-            错误: {error}
-          </div>
-        ) : (
-          <ol className="mb-8 list-inside list-decimal space-y-2">
-            {topoOrder.map((node) => (
-              <li key={node.id} className="text-sm">
-                <span className="text-blue-400">[{node.type.toUpperCase()}]</span> {node.data.label}
-              </li>
-            ))}
-          </ol>
-        )}
-
-        <h3 className="mb-4 text-lg font-bold">逻辑地图 (JSON)</h3>
-        <pre className="overflow-auto rounded bg-black/30 p-2 text-xs">
-          {JSON.stringify({ nodes, edges }, null, 2)}
-        </pre>
-      </div>
+      {/* 右侧面板 */}
+      <PreviewPanel />
     </div>
   )
 }
@@ -85,6 +70,7 @@ const FlowEditor = () => {
 export default function App() {
   return (
     <ReactFlowProvider>
+      <Toast />
       <FlowEditor />
     </ReactFlowProvider>
   )
