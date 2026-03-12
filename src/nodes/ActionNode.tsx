@@ -7,13 +7,26 @@ import { useStore } from '../store/useStore'
 export const ActionNode = ({ id, selected, data }: NodeProps<FlowNodeData>) => {
   const updateNodeData = useStore((state) => state.updateNodeData)
 
+  const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateNodeData(id, { label: e.target.value })
+  }
+
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     updateNodeData(id, { content: e.target.value })
   }
 
   return (
     <BaseNode id={id} selected={selected} handleColor="bg-green-500" className="w-64 bg-green-50">
-      <div className="p-2 font-semibold text-green-700">⚡ 动作节点</div>
+      <div className="p-2">
+        <input
+          type="text"
+          value={data.label}
+          onChange={handleLabelChange}
+          className="nodrag w-full rounded border border-green-200 bg-transparent px-2 py-1 font-semibold text-green-700 focus:border-green-500 focus:outline-none"
+          placeholder="节点名称"
+          onMouseDown={(e) => e.stopPropagation()}
+        />
+      </div>
       <textarea
         value={data.content ?? ''}
         onChange={handleContentChange}

@@ -1,5 +1,5 @@
 /**
- * @file types/index.ts
+ * @file types/flow.ts
  * @description 核心流程图类型定义中心
  */
 

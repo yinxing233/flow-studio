@@ -5,10 +5,10 @@
 
 import { useStore } from '../store/useStore'
 import type { FlowNode } from '../types'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Download, Upload, RotateCcw } from 'lucide-react'
 
 export const ControlPanel = () => {
-  const { addNode, nodes, deleteNode } = useStore()
+  const { addNode, nodes, deleteNode, edges, loadFromJSON, resetToDefault } = useStore()
 
   // 获取当前选中的节点
   const selectedNodes = nodes.filter((node) => node.selected)
@@ -16,7 +16,6 @@ export const ControlPanel = () => {
   // 处理删除选中节点
   const handleDeleteSelected = () => {
     if (selectedNodes.length === 0) return
-    // 为了避免在循环中修改数组，先复制一份 ID 列表
     const idsToDelete = selectedNodes.map((node) => node.id)
     idsToDelete.forEach((id) => deleteNode(id))
   }
@@ -26,13 +25,58 @@ export const ControlPanel = () => {
     const newNode: FlowNode = {
       id: `${Date.now()}`,
       type,
-      position: { x: 100, y: 100 }, // 会被 store 中的 addNode 调整
+      position: { x: 100, y: 100 },
       data: {
         label: `${type.charAt(0).toUpperCase() + type.slice(1)} 节点`,
         content: '',
       },
     }
     addNode(newNode)
+  }
+
+  // 导出 JSON
+  const handleExport = () => {
+    const data = {
+      nodes,
+      edges,
+    }
+    const jsonStr = JSON.stringify(data, null, 2)
+    const blob = new Blob([jsonStr], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'flow.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  // 导入 JSON
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target?.result as string)
+        if (json.nodes && json.edges) {
+          loadFromJSON(json)
+        } else {
+          alert('无效的 JSON 文件：缺少 nodes 或 edges 字段')
+        }
+      } catch (err) {
+        alert('解析 JSON 失败：' + err)
+      }
+    }
+    reader.readAsText(file)
+    // 重置 input 以便再次选择同一文件
+    event.target.value = ''
+  }
+
+  // 重置为默认示例
+  const handleReset = () => {
+    if (confirm('确定要重置为默认示例吗？当前未保存的更改将丢失。')) {
+      resetToDefault()
+    }
   }
 
   return (
@@ -61,6 +105,28 @@ export const ControlPanel = () => {
       </div>
 
       <div className="mt-auto flex flex-col gap-2">
+        <button
+          onClick={handleExport}
+          className="flex items-center justify-center gap-2 rounded bg-blue-600 px-4 py-2 transition-colors hover:bg-blue-700 active:scale-95"
+        >
+          <Download size={16} />
+          导出 JSON
+        </button>
+
+        <label className="flex cursor-pointer items-center justify-center gap-2 rounded bg-purple-600 px-4 py-2 transition-colors hover:bg-purple-700 active:scale-95">
+          <Upload size={16} />
+          导入 JSON
+          <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+        </label>
+
+        <button
+          onClick={handleReset}
+          className="flex items-center justify-center gap-2 rounded bg-yellow-600 px-4 py-2 transition-colors hover:bg-yellow-700 active:scale-95"
+        >
+          <RotateCcw size={16} />
+          重置默认
+        </button>
+
         <button
           onClick={handleDeleteSelected}
           disabled={selectedNodes.length === 0}

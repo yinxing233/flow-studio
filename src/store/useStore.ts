@@ -23,13 +23,15 @@ export interface Toast {
   type: 'error' | 'success' | 'info'
 }
 
+const STORAGE_KEY = 'flow-studio-data'
+
 interface FlowState {
   nodes: FlowNode[]
   edges: FlowEdge[]
   compiledPrompt: string
   isValid: boolean
   error: string | null
-  toast: Toast | null // 新增 toast 状态
+  toast: Toast | null
 
   // React Flow 必需的 handlers
   onNodesChange: OnNodesChange
@@ -45,26 +47,59 @@ interface FlowState {
   // Toast 控制
   showToast: (toast: Toast) => void
   clearToast: () => void
+  // 从 JSON 加载流程图
+  loadFromJSON: (data: { nodes: FlowNode[]; edges: FlowEdge[] }) => void
+  // 重置为默认示例
+  resetToDefault: () => void
+}
+
+// 默认示例数据
+const defaultNodes: FlowNode[] = [
+  {
+    id: '1',
+    type: 'input',
+    position: { x: 100, y: 100 },
+    data: { label: '输入经历 (Node A)', content: '' },
+  },
+  {
+    id: '2',
+    type: 'action',
+    position: { x: 400, y: 100 },
+    data: { label: 'AI 简历提取 (Node B)', content: '' },
+  },
+]
+const defaultEdges: FlowEdge[] = [{ id: 'e1-2', source: '1', target: '2' }]
+
+// 尝试从 localStorage 读取初始数据
+let initialNodes: FlowNode[] = defaultNodes
+let initialEdges: FlowEdge[] = defaultEdges
+try {
+  const saved = localStorage.getItem(STORAGE_KEY)
+  if (saved) {
+    const parsed = JSON.parse(saved)
+    if (
+      parsed.nodes &&
+      Array.isArray(parsed.nodes) &&
+      parsed.edges &&
+      Array.isArray(parsed.edges)
+    ) {
+      initialNodes = parsed.nodes
+      initialEdges = parsed.edges
+    }
+  }
+} catch (e) {
+  console.warn('Failed to load from localStorage, using default data', e)
+}
+
+const saveToLocalStorage = (nodes: FlowNode[], edges: FlowEdge[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges }))
+  } catch (e) {
+    console.warn('Failed to save to localStorage', e)
+  }
 }
 
 export const useStore = create<FlowState>((set, get) => {
-  const initialNodes: FlowNode[] = [
-    {
-      id: '1',
-      type: 'input',
-      position: { x: 100, y: 100 },
-      data: { label: '输入经历 (Node A)', content: '' },
-    },
-    {
-      id: '2',
-      type: 'action',
-      position: { x: 400, y: 100 },
-      data: { label: 'AI 简历提取 (Node B)', content: '' },
-    },
-  ]
-
-  const initialEdges: FlowEdge[] = [{ id: 'e1-2', source: '1', target: '2' }]
-
   const initialCompile = compileGraph(initialNodes, initialEdges)
 
   return {
@@ -73,7 +108,7 @@ export const useStore = create<FlowState>((set, get) => {
     compiledPrompt: initialCompile.markdown,
     isValid: initialCompile.isValid,
     error: initialCompile.error || null,
-    toast: null, // 初始无 toast
+    toast: null,
 
     onNodesChange: (changes: NodeChange[]) => {
       const { nodes: currentNodes, edges: currentEdges } = get()
@@ -105,7 +140,6 @@ export const useStore = create<FlowState>((set, get) => {
       const testEdges = [...edges, newEdge]
       const testCompile = compileGraph(nodes, testEdges)
       if (!testCompile.isValid) {
-        // 显示 toast 提示
         get().showToast({
           message: '无法连接：会导致循环依赖',
           type: 'error',
@@ -151,6 +185,8 @@ export const useStore = create<FlowState>((set, get) => {
         isValid: result.isValid,
         error: result.error || null,
       })
+      // 自动保存到 localStorage
+      saveToLocalStorage(nodes, edges)
     },
 
     getSortedNodes: () => {
@@ -159,12 +195,9 @@ export const useStore = create<FlowState>((set, get) => {
       return result.sortedNodes || nodes
     },
 
-    // Toast 方法
     showToast: (toast: Toast) => {
       set({ toast })
-      // 3秒后自动清除
       setTimeout(() => {
-        // 检查当前的 toast 是否还是这个，防止被新 toast 覆盖时错误清除
         set((state) => {
           if (state.toast === toast) {
             return { toast: null }
@@ -174,6 +207,16 @@ export const useStore = create<FlowState>((set, get) => {
       }, 3000)
     },
     clearToast: () => set({ toast: null }),
+
+    loadFromJSON: (data: { nodes: FlowNode[]; edges: FlowEdge[] }) => {
+      set({ nodes: data.nodes, edges: data.edges })
+      get().recompute()
+    },
+
+    resetToDefault: () => {
+      set({ nodes: defaultNodes, edges: defaultEdges })
+      get().recompute()
+    },
   }
 })
 
