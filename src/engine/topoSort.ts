@@ -1,5 +1,3 @@
-import type { FlowNode, FlowEdge } from '../types'
-
 /**
  * 拓扑排序（Kahn算法）
  * @param nodes 所有节点
@@ -7,6 +5,9 @@ import type { FlowNode, FlowEdge } from '../types'
  * @returns 排序后的节点数组
  * @throws 存在环路时抛出错误
  */
+
+import type { FlowNode, FlowEdge } from '../types'
+
 export const topoSort = (nodes: FlowNode[], edges: FlowEdge[]): FlowNode[] => {
   // 1. 初始化：入度表、邻接表、节点映射
   const inDegree = new Map<string, number>() // 节点 -> 入度
