@@ -58,17 +58,27 @@ const defaultNodes: FlowNode[] = [
   {
     id: '1',
     type: 'input',
-    position: { x: 100, y: 100 },
-    data: { label: '输入经历 (Node A)', content: '' },
+    position: { x: 100, y: 150 },
+    data: { label: '📥 原始输入', content: '在此定义初始数据或需求背景' },
   },
   {
     id: '2',
     type: 'action',
-    position: { x: 400, y: 100 },
-    data: { label: 'AI 简历提取 (Node B)', content: '' },
+    position: { x: 400, y: 150 },
+    data: { label: '⚙️ 核心处理', content: '对输入进行加工、转换或计算' },
+  },
+  {
+    id: '3',
+    type: 'constraint',
+    position: { x: 700, y: 150 },
+    data: { label: '⚖️ 规范约束', content: '定义输出必须遵守的规则与边界' },
   },
 ]
-const defaultEdges: FlowEdge[] = [{ id: 'e1-2', source: '1', target: '2' }]
+
+const defaultEdges: FlowEdge[] = [
+  { id: 'e1-2', source: '1', target: '2' },
+  { id: 'e2-3', source: '2', target: '3' },
+]
 
 // 尝试从 localStorage 读取初始数据
 let initialNodes: FlowNode[] = defaultNodes
