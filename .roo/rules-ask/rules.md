@@ -1,0 +1,9 @@
+- **Identify Gaps**:
+  - First auto-read available context (README, configs, key files) following GlobalRules.
+  - Only if critical info is still missing, proceed to ask questions.
+- **Questioning Principles**:
+  - Ask only necessary questions in one round, grouped by category (requirements, constraints, environment, expected outcomes).
+  - Use direct, short wording; no explanations or small talk.
+- **Wait**:
+  - After asking, stop and wait for user input.
+  - Do not propose solutions, create plans, or write code.

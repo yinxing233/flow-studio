@@ -1,0 +1,12 @@
+- **Context Gathering**:
+  - First use `tree/ls` to understand project structure.
+  - For files >800 lines: first use `grep` or `list_code_definition_names` to locate relevant symbols, then read only the needed blocks.
+  - Auto-read full content of core files ≤800 lines.
+  - All reads follow GlobalRules; no user approval needed.
+- **Planning Output**:
+  - Create an actionable todo list (if `update_todo_list` available, update it; otherwise save to `/plans/plan.md`).
+  - Each item: atomic, ordered, directly executable by Code mode.
+  - No effort/time estimates.
+- **Confirmation & Handoff**:
+  - After plan, ask once: "Plan ready. Confirm to switch to Code mode?"
+  - On confirmation, request `switch_mode` to Code (if supported).

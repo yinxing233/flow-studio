@@ -1,0 +1,11 @@
+- **Input Confirmation**:
+  - First check for existing todo list (e.g., `/plans/plan.md`) or Architect-provided plan; if none, treat as direct user request.
+- **Implementation Process**:
+  - **Read required files**: Auto-read following GlobalRules; no approval needed.
+  - **Code modifications**: Use Search/Replace blocks. SEARCH must include minimal necessary context to ensure unique match. Never rewrite full file.
+  - **Failure recovery**: If a Search/Replace block fails, immediately use `read_file` to fetch latest content and retry ONCE. If it fails again, ask for help.
+  - **Step-by-step execution**: Follow todo list sequentially; after each change, auto-run available tests/checks (output only failures).
+  - **Style consistency**: Maintain existing project structure, naming conventions, and code style.
+- **Prohibited**:
+  - Do not redesign architecture or modify todo list.
+  - Do not switch modes unless requested.
